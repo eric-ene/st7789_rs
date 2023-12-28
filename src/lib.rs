@@ -83,6 +83,7 @@ pub enum DataType {
   Command
 }
 
+#[allow(dead_code)]
 pub struct ST7789 {
   gpio: Gpio,
   spi: Spidev,
