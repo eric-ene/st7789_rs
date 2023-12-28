@@ -34,7 +34,7 @@
   .with_reset(RST)
   .with_offset(OFF_X, OFF_Y) // optional
   .with_dimensions(WIDTH, HEIGHT) // optional
-  .with_rotation(90.0) // optional, currently does nothing.
+  .with_rotation(90.0); // optional, currently does nothing.
 
   // initialize the device
   device.init();
