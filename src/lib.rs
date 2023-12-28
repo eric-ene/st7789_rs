@@ -1,7 +1,7 @@
 use std::{fs::File, cmp::min, thread::sleep, time::Duration};
 
 use color::Color;
-use image::{DynamicImage, ImageBuffer, imageops::overlay, Rgba, Rgb};
+use image::{DynamicImage, ImageBuffer, imageops::overlay};
 use imageproc::{drawing::{draw_text_mut, draw_filled_rect_mut}, rect::Rect};
 use rppal::gpio::{Gpio, OutputPin};
 use rusttype::{Scale, Font};
@@ -187,7 +187,7 @@ impl ST7789 {
       &mut base, 
       Rect::at(0, 0)
         .of_size(self.width as u32, self.height as u32), 
-      Rgba([color.0[0], color.0[1], color.0[2], 0xff])
+      color.get_rgba()
     );
     self.draw_image(&base, 0, 0);
   }
