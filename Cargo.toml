@@ -1,7 +1,12 @@
 [package]
 name = "st7789_rs"
+description = "A driver and graphics library for st7789 displays, primarily used on a Raspberry Pi"
+homepage = "https://github.com/eric-ene/st7789_rs"
+
 version = "0.1.1"
 edition = "2021"
+
+license-file = "LICENSE"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
