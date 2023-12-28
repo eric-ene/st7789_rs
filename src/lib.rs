@@ -181,7 +181,7 @@ impl ST7789 {
     );
   }
 
-  pub fn draw_clear(&mut self, color: Rgb<u8>) {
+  pub fn draw_clear(&mut self, color: &Color) {
     let mut base = DynamicImage::new_rgb8(self.width as u32, self.height as u32);
     draw_filled_rect_mut(
       &mut base, 
