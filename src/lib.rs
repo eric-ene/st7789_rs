@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::{fs::File, cmp::min, thread::sleep, time::Duration};
 
 use color::Color;
@@ -16,63 +14,69 @@ pub mod conv;
 pub mod text;
 pub mod color;
 
-const BG_SPI_CS_BACK: u8 = 0;
-const BG_SPI_CS_FRONT: u8 = 1;
+struct Consts {}
 
-const SPI_CLOCK_HZ: u32 = 60_000_000;
+#[allow(dead_code)]
+impl Consts {
+  const BG_SPI_CS_BACK: u8 = 0;
+  const BG_SPI_CS_FRONT: u8 = 1;
 
-const ST7789_NOP: u8 = 0x00;
-const ST7789_SWRESET: u8 = 0x01;
-const ST7789_RDDID: u8 = 0x04;
-const ST7789_RDDST: u8 = 0x09;
+  const SPI_CLOCK_HZ: u32 = 60_000_000;
 
-const ST7789_SLPIN: u8 = 0x10;
-const ST7789_SLPOUT: u8 = 0x11;
-const ST7789_PTLON: u8 = 0x12;
-const ST7789_NORON: u8 = 0x13;
+  const ST7789_NOP: u8 = 0x00;
+  const ST7789_SWRESET: u8 = 0x01;
+  const ST7789_RDDID: u8 = 0x04;
+  const ST7789_RDDST: u8 = 0x09;
 
-const ST7789_INVOFF: u8 = 0x20;
-const ST7789_INVON: u8 = 0x21;
-const ST7789_DISPOFF: u8 = 0x28;
-const ST7789_DISPON: u8 = 0x29;
+  const ST7789_SLPIN: u8 = 0x10;
+  const ST7789_SLPOUT: u8 = 0x11;
+  const ST7789_PTLON: u8 = 0x12;
+  const ST7789_NORON: u8 = 0x13;
 
-const ST7789_CASET: u8 = 0x2A;
-const ST7789_RASET: u8 = 0x2B;
-const ST7789_RAMWR: u8 = 0x2C;
-const ST7789_RAMRD: u8 = 0x2E;
+  const ST7789_INVOFF: u8 = 0x20;
+  const ST7789_INVON: u8 = 0x21;
+  const ST7789_DISPOFF: u8 = 0x28;
+  const ST7789_DISPON: u8 = 0x29;
 
-const ST7789_PTLAR: u8 = 0x30;
-const ST7789_MADCTL: u8 = 0x36;
-const ST7789_COLMOD: u8 = 0x3A;
+  const ST7789_CASET: u8 = 0x2A;
+  const ST7789_RASET: u8 = 0x2B;
+  const ST7789_RAMWR: u8 = 0x2C;
+  const ST7789_RAMRD: u8 = 0x2E;
 
-const ST7789_FRMCTR1: u8 = 0xB1;
-const ST7789_FRMCTR2: u8 = 0xB2;
-const ST7789_FRMCTR3: u8 = 0xB3;
-const ST7789_INVCTR: u8 = 0xB4;
-const ST7789_DISSET5: u8 = 0xB6;
+  const ST7789_PTLAR: u8 = 0x30;
+  const ST7789_MADCTL: u8 = 0x36;
+  const ST7789_COLMOD: u8 = 0x3A;
 
-const ST7789_GCTRL: u8 = 0xB7;
-const ST7789_GTADJ: u8 = 0xB8;
-const ST7789_VCOMS: u8 = 0xBB;
+  const ST7789_FRMCTR1: u8 = 0xB1;
+  const ST7789_FRMCTR2: u8 = 0xB2;
+  const ST7789_FRMCTR3: u8 = 0xB3;
+  const ST7789_INVCTR: u8 = 0xB4;
+  const ST7789_DISSET5: u8 = 0xB6;
 
-const ST7789_LCMCTRL: u8 = 0xC0;
-const ST7789_IDSET: u8 = 0xC1;
-const ST7789_VDVVRHEN: u8 = 0xC2;
-const ST7789_VRHS: u8 = 0xC3;
-const ST7789_VDVS: u8 = 0xC4;
-const ST7789_VMCTR1: u8 = 0xC5;
-const ST7789_FRCTRL2: u8 = 0xC6;
-const ST7789_CABCCTRL: u8 = 0xC7;
+  const ST7789_GCTRL: u8 = 0xB7;
+  const ST7789_GTADJ: u8 = 0xB8;
+  const ST7789_VCOMS: u8 = 0xBB;
 
-const ST7789_RDID1: u8 = 0xDA;
-const ST7789_RDID2: u8 = 0xDB;
-const ST7789_RDID3: u8 = 0xDC;
-const ST7789_RDID4: u8 = 0xDD;
+  const ST7789_LCMCTRL: u8 = 0xC0;
+  const ST7789_IDSET: u8 = 0xC1;
+  const ST7789_VDVVRHEN: u8 = 0xC2;
+  const ST7789_VRHS: u8 = 0xC3;
+  const ST7789_VDVS: u8 = 0xC4;
+  const ST7789_VMCTR1: u8 = 0xC5;
+  const ST7789_FRCTRL2: u8 = 0xC6;
+  const ST7789_CABCCTRL: u8 = 0xC7;
 
-const ST7789_GMCTRP1: u8 = 0xE0;
-const ST7789_GMCTRN1: u8 = 0xE1;
+  const ST7789_RDID1: u8 = 0xDA;
+  const ST7789_RDID2: u8 = 0xDB;
+  const ST7789_RDID3: u8 = 0xDC;
+  const ST7789_RDID4: u8 = 0xDD;
 
-const ST7789_PWCTR6: u8 = 0xFC;
+  const ST7789_GMCTRP1: u8 = 0xE0;
+  const ST7789_GMCTRN1: u8 = 0xE1;
+
+  const ST7789_PWCTR6: u8 = 0xFC;
+}
+
 
 pub enum DataType {
   Data,
@@ -199,7 +203,7 @@ impl ST7789 {
     let bytes_vec = bytes_from_img(&self.display_buffer);
     let bytes = bytes_vec.as_slice();
 
-    self.send_cmd(ST7789_RAMWR);
+    self.send_cmd(Consts::ST7789_RAMWR);
     self.send_datas(bytes);
   }
 
@@ -215,14 +219,14 @@ impl ST7789 {
     y2 += self.offset_y;
  
     // column addr set
-    self.send_cmd(ST7789_CASET);
+    self.send_cmd(Consts::ST7789_CASET);
     self.send_data((x1 >> 8) as u8); // x start
     self.send_data((x1 & 0xff) as u8); // ^ other half
     self.send_data((x2 >> 8) as u8); // x end
     self.send_data((x2 & 0xff) as u8); // ^ other half
 
     // row addr set
-    self.send_cmd(ST7789_RASET);
+    self.send_cmd(Consts::ST7789_RASET);
     self.send_data((y1 >> 8) as u8); // x start
     self.send_data((y1 & 0xff) as u8); // ^ other half
     self.send_data((y2 >> 8) as u8); // x end
@@ -242,7 +246,7 @@ impl ST7789 {
       pix_vec.push(color_half[1]);
     }
 
-    self.send_cmd(ST7789_RAMWR);
+    self.send_cmd(Consts::ST7789_RAMWR);
     self.send_datas(pix_vec.as_slice());
   }
 
@@ -271,7 +275,7 @@ impl ST7789 {
     );
     self.reset();
 
-    self.send_cmd(ST7789_SWRESET);
+    self.send_cmd(Consts::ST7789_SWRESET);
     sleep(Duration::from_millis(150));
 
     // mem access data ctrl
@@ -285,45 +289,45 @@ impl ST7789 {
     // 6 - col addr order  - l-r / r-l
     // 7 - page addr order - t-b / b-t
   
-    self.send_cmd(ST7789_MADCTL);
+    self.send_cmd(Consts::ST7789_MADCTL);
     self.send_data(0x70);
 
-    self.send_cmd(ST7789_FRMCTR2); // frame ctrl, normal mode
+    self.send_cmd(Consts::ST7789_FRMCTR2); // frame ctrl, normal mode
     self.send_data(0x0C);
     self.send_data(0x0C);
     self.send_data(0x00);
     self.send_data(0x33);
     self.send_data(0x33);
 
-    self.send_cmd(ST7789_COLMOD); // color mode
+    self.send_cmd(Consts::ST7789_COLMOD); // color mode
     self.send_data(0x05); // rgb565
 
-    self.send_cmd(ST7789_GCTRL); // gate ctrl
+    self.send_cmd(Consts::ST7789_GCTRL); // gate ctrl
     self.send_data(0x35);
 
-    self.send_cmd(ST7789_VCOMS); 
+    self.send_cmd(Consts::ST7789_VCOMS); 
     self.send_data(0x13);
 
-    self.send_cmd(ST7789_LCMCTRL); // power ctrl
+    self.send_cmd(Consts::ST7789_LCMCTRL); // power ctrl
     self.send_data(0x2C);
 
-    self.send_cmd(ST7789_VDVVRHEN); // power ctrl
+    self.send_cmd(Consts::ST7789_VDVVRHEN); // power ctrl
     self.send_data(0x01);
 
-    self.send_cmd(ST7789_VRHS); // power ctrl
+    self.send_cmd(Consts::ST7789_VRHS); // power ctrl
     self.send_data(0x0B);
 
-    self.send_cmd(ST7789_VDVS); // power ctrl
+    self.send_cmd(Consts::ST7789_VDVS); // power ctrl
     self.send_data(0x20);
 
     self.send_cmd(0xd0); // power ctrl
     self.send_data(0xa4);
     self.send_data(0xa1);
 
-    self.send_cmd(ST7789_FRCTRL2); // framerate ctrl
+    self.send_cmd(Consts::ST7789_FRCTRL2); // framerate ctrl
     self.send_data(0x0f);
 
-    self.send_cmd(ST7789_GMCTRP1); // gamma +
+    self.send_cmd(Consts::ST7789_GMCTRP1); // gamma +
     self.send_data(0x00);
     self.send_data(0x03);
     self.send_data(0x07);
@@ -339,7 +343,7 @@ impl ST7789 {
     self.send_data(0x25);
     self.send_data(0x27);
 
-    self.send_cmd(ST7789_GMCTRN1); // gamma -
+    self.send_cmd(Consts::ST7789_GMCTRN1); // gamma -
     self.send_data(0x00);
     self.send_data(0x03);
     self.send_data(0x08);
@@ -356,13 +360,13 @@ impl ST7789 {
     self.send_data(0x27);
 
     self.send_cmd(match self.invert {
-        true => ST7789_INVON,
-        false => ST7789_INVOFF
+        true => Consts::ST7789_INVON,
+        false => Consts::ST7789_INVOFF
     });
 
-    self.send_cmd(ST7789_SLPOUT);
+    self.send_cmd(Consts::ST7789_SLPOUT);
 
-    self.send_cmd(ST7789_DISPON);
+    self.send_cmd(Consts::ST7789_DISPON);
   }
 
   pub fn cleanup(&mut self) {
