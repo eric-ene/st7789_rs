@@ -86,7 +86,6 @@ pub enum DataType {
 pub struct ST7789 {
   gpio: Gpio,
   spi: Spidev,
-  //pwm: Pwm,
 
   cs: OutputPin,
   dc: OutputPin,
@@ -99,8 +98,7 @@ pub struct ST7789 {
   offset_x: i16, // optional w/ default (0)
   offset_y: i16, // optional w/ default (0)
 
-  invert: bool, // optional w/ default (false)
-  speed_hz: u32,
+  invert: bool,
 
   display_buffer: DynamicImage,
 }
@@ -135,10 +133,7 @@ impl ST7789 {
       \nThis is likely because SPI is not set\
       \nup on your pi."
     );
-
-    //let pwm = Pwm::with_frequency(pwm::Channel::Pwm0, 1000.0, 1.0, pwm::Polarity::Normal, false).unwrap();
-    
-    
+  
     return Self {
       gpio: gpio,
       spi: spi,
@@ -156,7 +151,6 @@ impl ST7789 {
       offset_y: 0,
 
       invert: true,
-      speed_hz: speed_hz,
       display_buffer: DynamicImage::ImageRgb8(ImageBuffer::new(320, 170))
     }
   }
