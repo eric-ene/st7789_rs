@@ -3,14 +3,14 @@ use rusttype::{Font, Scale, point};
 use crate::color::Color;
 
 pub struct Text<'a> {
-  pub content: &'a str,
+  pub content: String,
   pub size: f32,
   pub font: Font<'a>,
   pub color: Color
 }
 
 impl<'a> Text<'a> {
-  pub fn new(text: &'a str, size: f32, font: Font<'a>, color: Color) -> Self {
+  pub fn new(text: String, size: f32, font: Font<'a>, color: Color) -> Self {
     Self {
       content: text,
       size: size,
@@ -20,7 +20,7 @@ impl<'a> Text<'a> {
   }
 
   pub fn get_width(&self) -> u32 {
-    let glyphs: Vec<_> = self.font.layout(self.content, Scale::uniform(self.size), point(0.0, 0.0)).collect();
+    let glyphs: Vec<_> = self.font.layout(self.content.as_str(), Scale::uniform(self.size), point(0.0, 0.0)).collect();
     let glyphs_width = {
       let min_x = glyphs
           .first()

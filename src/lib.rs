@@ -173,7 +173,7 @@ impl ST7789 {
 
   pub fn draw_text_obj(&mut self, text: &Text, pos_x: i16, pos_y: i16) {
    self.draw_text( 
-      text.content,
+      text.content.as_str(),
       &text.font,
       pos_x, pos_y,
       &text.color,
