@@ -1,4 +1,4 @@
-# st7789-rs
+# st7789_rs
 
 ## Information
 ### What is this?
