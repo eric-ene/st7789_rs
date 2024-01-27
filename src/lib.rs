@@ -102,6 +102,8 @@ pub struct ST7789 {
   invert: bool,
 
   display_buffer: DynamicImage,
+
+  chunk_size: Option<usize>
 }
 
 impl ST7789 {
@@ -152,7 +154,9 @@ impl ST7789 {
       offset_y: 0,
 
       invert: true,
-      display_buffer: DynamicImage::ImageRgb8(ImageBuffer::new(320, 170))
+      display_buffer: DynamicImage::ImageRgb8(ImageBuffer::new(320, 170)),
+
+      chunk_size: None
     }
   }
 
@@ -385,14 +389,14 @@ impl ST7789 {
   }
 
   pub fn send_datas(&mut self, data: &[u8]) {
-    self.send(data, DataType::Data, None);
+    self.send(data, DataType::Data);
   }
 
   pub fn send_cmds(&mut self, data: &[u8]) {
-    self.send(data, DataType::Command, None);
+    self.send(data, DataType::Command);
   }
 
-  pub fn send(&mut self, data: &[u8], data_type: DataType, chunk_size: Option<usize>) {
+  pub fn send(&mut self, data: &[u8], data_type: DataType) {
     // set data mode (high for data, low for command)
     match data_type {
       DataType::Command => self.dc.set_low(),
@@ -400,7 +404,7 @@ impl ST7789 {
     };
 
     // get chunk size
-    let step = match chunk_size {
+    let step = match self.chunk_size {
       Some(s) => s,
       None => 4096
     };
@@ -439,6 +443,12 @@ impl ST7789 {
   pub fn with_offset(mut self, off_x: i16, off_y: i16) -> Self {
     self.offset_x = off_x;
     self.offset_y = off_y;
+
+    return self;
+  }
+
+  pub fn with_chunk_size(mut self, size: usize) -> Self {
+    self.chunk_size = Some(size);
 
     return self;
   }
