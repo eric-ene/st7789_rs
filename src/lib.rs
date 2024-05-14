@@ -185,15 +185,21 @@ impl ST7789 {
     );
   }
 
-  pub fn draw_clear(&mut self, color: &Color) {
-    let mut base = DynamicImage::new_rgb8(self.width as u32, self.height as u32);
+  pub fn draw_rect(&mut self, rect: Rect, color: &Color) {
     draw_filled_rect_mut(
-      &mut base, 
+      &mut self.display_buffer,
+      rect,
+      color.get_rgba()
+    );
+  }
+
+  pub fn draw_clear(&mut self, color: &Color) {
+    draw_filled_rect_mut(
+      &mut self.display_buffer,
       Rect::at(0, 0)
         .of_size(self.width as u32, self.height as u32), 
       color.get_rgba()
     );
-    self.draw_image(&base, 0, 0);
   }
 
   pub fn display(&mut self) {
