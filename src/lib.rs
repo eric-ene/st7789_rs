@@ -91,7 +91,7 @@ pub struct ST7789 {
   cs: OutputPin,
   dc: OutputPin,
   bl: OutputPin,
-  rst: Option<OutputPin>, // optional
+  rst: Option<OutputPin>,
 
   width: i16, // dimensions
   height: i16, // ^
